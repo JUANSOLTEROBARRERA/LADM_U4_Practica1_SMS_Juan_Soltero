@@ -6,12 +6,17 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.size
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -19,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import mx.tecnm.tepic.ladm_u4_ejercicio1_smspermisos.databinding.ActivityMainBinding
+import java.io.BufferedWriter
 import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -30,6 +36,11 @@ class MainActivity : AppCompatActivity() {
     val siPermisoReceiver = 2
     var listaIDs = ArrayList<String>()
     val PICK_PDF_FILE = 2
+    var filtro = "TELEFONO"
+    val arreglo = ArrayList<String>()
+    var arreglofiltro = ArrayList<String>()
+    var hayfiltro = false
+    val spinner = arrayOf("Telefono")
     //val xlWb = XSSFWorkbook()
     //val xlWs = xlWb.createSheet()
 
@@ -40,6 +51,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+
 
 
         if(ActivityCompat.checkSelfPermission(this,
@@ -59,6 +73,72 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
+        //CODIGO DE SPINNER
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item,spinner)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_item)
+        binding.spinner1.adapter = adapter
+        binding.spinner1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                if(binding.spinner1.selectedItemPosition == 0){
+                    filtro = "TELEFONO"
+                }
+                if(binding.spinner1.selectedItemPosition == 1){
+                    filtro = "MENSAJE"
+                }
+                if(binding.spinner1.selectedItemPosition == 2){
+                    filtro = "FECHA"
+                }
+            }
+
+        }
+        //----------------
+        binding.filtrar.setOnClickListener {
+            if(hayfiltro){
+                arreglofiltro.clear()
+            }
+            hayfiltro = true
+            binding.lista.adapter = null
+
+
+            (0..arreglo.size-1).forEach{
+                if(filtro=="TELEFONO"){
+                    var cad = arreglo.get(it).split(":")
+
+                    if(binding.clave.text.toString().toDouble()!=cad.get(1).replace(" ","").replace("Mensaje","").toDouble()){
+                        //arreglo.set(it,"")
+                    }else{
+                        arreglofiltro.add(arreglo.get(it))
+                    }
+                }
+                if(filtro=="MENSAJE"){
+                    var cad = arreglo.get(it).split(":")
+                    var cad2 = cad.get(2).replace("Fecha","")
+                    Toast.makeText(this, "${cad2.replace(" ","")} == ${binding.clave.text.toString().replace(" ","")}", Toast.LENGTH_LONG)
+                        .show()
+                    if(binding.clave.text.toString().substring(0,2)!=cad2.substring(0,2)){
+
+                    }else{
+
+                        arreglofiltro.add(arreglo.get(it))
+                    }
+                }
+                if(filtro=="FECHA"){
+
+                }
+            }
+            binding.lista.setAdapter(ArrayAdapter<String>(this,
+                R.layout.simple_list_item_1,arreglofiltro));
+        }
+        binding.todos.setOnClickListener {
+            binding.lista.setAdapter(ArrayAdapter<String>(this,
+                R.layout.simple_list_item_1,arreglo));
+            hayfiltro = false
+            arreglofiltro.clear()
+        }
         //---------------------------
         val consulta = FirebaseDatabase.getInstance().getReference().child("smsregistro")
 
@@ -74,6 +154,10 @@ class MainActivity : AppCompatActivity() {
                     val men = data.getValue<Sms>()!!.mensaje
                     val fec = data.getValue<Sms>()!!.fecha
                     datos.add("Telefono: ${tel}\n Mensaje: ${men}\n" +
+                            " Fecha: ${fec}")
+
+
+                    arreglo.add("Telefono: ${tel}\n Mensaje: ${men}\n" +
                             " Fecha: ${fec}")
                 }
                 mostrarLista(datos)
@@ -118,9 +202,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun mensajeRecibir() {
-        AlertDialog.Builder(this)
-            .setMessage("SE OTORGO RECIBIR")
-            .show()
+        //se otorgo recibir
     }
 
     fun mostrarLista(datos:ArrayList<String>){
@@ -146,8 +228,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun guardarinterno(){
-
-
 
         val path = this.getExternalFilesDir(null)
 
@@ -193,14 +273,16 @@ class MainActivity : AppCompatActivity() {
     fun abrirexcel(){
 
         AlertDialog.Builder(this)
-            .setMessage("EL ARCHIVO .csv SE ENCUENTRA EN EL ALMACENAMIENTO INTERNO DEL TELEFONO," +
-                    "PARA INGRESAR ES NECESARIO ABRIR EL STORAGE Y DESDE LAS OPCIONES EN LA PARTE" +
-                    "SUPERIOR DERECHA SELECCIONAR 'SHOW INTERNAL STORAGE', AL HACER ESTO NOS APARECERA" +
-                    "ADEMAS DE LA TARJETA SD EL ALMACENAMIENTO INTERNO DEL TELEFONO, DESDE AQUI SEGUIREMOS LA" +
-                    "SIGUIENTE RUTA: Android/data/mx.tecm.tepic.ladm_u4_practica1_sms_juan_soltero")
+            .setMessage("EL ARCHIVO .csv SE ENCUENTRA EN EL ALMACENAMIENTO INTERNO DEL TELÉFONO," +
+                    " PARA INGRESAR ES NECESARIO ABRIR EL STORAGE DESDE LA CONFIGURACIÓN" +
+                    ", Y DESDE LAS OPCIONES EN LA PARTE" +
+                    " SUPERIOR DERECHA SELECCIONAR 'SHOW INTERNAL STORAGE', AL HACER ESTO NOS APARECERÁ" +
+                    " ADEMÁS DE LA TARJETA SD, EL ALMACENAMIENTO INTERNO DEL TELEFONO EN UNA CARPETA" +
+                    " LLAMADA 'AOSP on IA Emulator', DESDE AQUÍ SEGUIREMOS LA" +
+                    " SIGUIENTE RUTA: Android/data/mx.tecm.tepic.ladm_u4_practica1_sms_juan_soltero/files" +
+                    "/RegistrosSMS/registros.csv, SI EL TELEFONO TIENE EXCEL INSTALADO ES CUESTION DE DAR" +
+                    " DOBLE CLIC SOBRE EL ARCHIVO Y LO ABRIRÁ DE FORMA AUTOMÁTICA CON EXCEL")
             .show()
-
     }
-
 
 }

@@ -51,10 +51,51 @@
         android:textStyle="italic"
         android:textAlignment="center"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="FILTRAR"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:id="@+id/titulo4"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="10dp"
+        android:textAlignment="center"
+        />
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_toLeftOf="@+id/clave"
+        android:layout_below="@+id/titulo4"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/clave"
+        android:hint="Clave"
+        android:layout_below="@id/titulo4"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FILTRAR"
+        android:id="@+id/filtrar"
+        android:layout_centerHorizontal="true"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MOSTRAR TODOS"
+        android:id="@+id/todos"
+        android:layout_centerHorizontal="true"
+        />
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/lista"/>
 </LinearLayout>
