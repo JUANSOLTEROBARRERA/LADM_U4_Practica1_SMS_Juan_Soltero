@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "49097011503",
+    "project_id": "ladm-u4-p1-sms-juan",
+    "storage_bucket": "ladm-u4-p1-sms-juan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:49097011503:android:909ccf3ad1ff87f0ee71da",
+        "android_client_info": {
+          "package_name": "mx.tecnm.tepic.ladm_u4_practica1_sms_juan_soltero"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "49097011503-i77qbncca8ckmk037dc1aq3qqe482spd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALZ2VG9Viua2AxQuSS3gfc54AF0813-sg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "49097011503-i77qbncca8ckmk037dc1aq3qqe482spd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
